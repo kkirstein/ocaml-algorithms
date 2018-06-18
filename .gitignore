@@ -1,0 +1,7 @@
+# vim files
+*~
+*.swp
+
+# jbuilder
+_build/
+

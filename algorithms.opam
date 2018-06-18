@@ -1,0 +1,12 @@
+opam-version: "1.2"
+version: "1.0"
+maintainer: "kay-uwe@kirsteinhome.ch"
+authors: ["Kay-Uwe Kirstein"]
+dev-repo: "https://github.com/kkirstein/ocaml-playground.git"
+license: "MIT"
+build: [
+  ["jbuilder" "build" "--only" "benchmark" "--root" "." "-j" jobs "@install"]
+]
+depends: [
+  "cmdliner"
+]
