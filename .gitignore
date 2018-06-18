@@ -5,3 +5,5 @@
 # jbuilder
 _build/
 
+# dist
+dist

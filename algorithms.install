@@ -1,0 +1,11 @@
+lib: [
+  "_build/install/default/lib/algorithms/META" {"META"}
+  "_build/install/default/lib/algorithms/opam" {"opam"}
+]
+bin: [
+  "_build/install/default/bin/nqueens" {"nqueens"}
+]
+doc: [
+  "_build/install/default/doc/algorithms/README.md"
+  "_build/install/default/doc/algorithms/LICENSE"
+]

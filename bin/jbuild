@@ -1,0 +1,7 @@
+(jbuild_version 1)
+
+(executables
+ ((names (nqueens))
+  (public_names (nqueens))
+  (libraries (cmdliner))))
+

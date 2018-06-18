@@ -11,7 +11,7 @@ else
 endif
 
 # targets for distribution
-dist_sources = 
+dist_sources = bin/nqueens.exe
 dist_target = $(foreach f,$(dist_sources),./dist/$(basename $(notdir $(f)$(EXT_EXE))))
 
 all: build
