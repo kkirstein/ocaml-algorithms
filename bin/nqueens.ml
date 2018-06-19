@@ -22,9 +22,11 @@ let rec backtrack count =
 
 (* main entry point *)
 let nqueens n = 
-  let () = print_endline "Calculating.." in
+  let tic = print_endline "Calculating.."; Sys.time () in
   let _solution = backtrack 8 in
-  print_endline " done."
+  let toc = Sys.time () in
+  Printf.printf " done (Elapsed time: %.3fs).\n" (toc -. tic)
+
 
 (* cmdliner options *)
 let num_queens =
