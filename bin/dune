@@ -1,0 +1,6 @@
+
+(executables
+ (names nqueens)
+  (public_names nqueens)
+  (libraries cmdliner))
+

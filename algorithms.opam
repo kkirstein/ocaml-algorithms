@@ -5,8 +5,9 @@ authors: ["Kay-Uwe Kirstein"]
 dev-repo: "https://github.com/kkirstein/ocaml-playground.git"
 license: "MIT"
 build: [
-  ["jbuilder" "build" "--only" "benchmark" "--root" "." "-j" jobs "@install"]
+	["dune" "build" "--only" "benchmark" "--root" "." "-j" jobs "@install"]
 ]
 depends: [
-  "cmdliner"
+	"dune" {build}
+	"cmdliner"
 ]

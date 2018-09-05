@@ -1,9 +1,0 @@
-B ../_build/default/bin/.nqueens.eobjs
-B /home/kirstein/.opam/4.06.1/lib/bytes
-B /home/kirstein/.opam/4.06.1/lib/cmdliner
-B /home/kirstein/.opam/4.06.1/lib/result
-FLG -w -40
-S .
-S /home/kirstein/.opam/4.06.1/lib/bytes
-S /home/kirstein/.opam/4.06.1/lib/cmdliner
-S /home/kirstein/.opam/4.06.1/lib/result

@@ -13,15 +13,15 @@ type position = {
 }
 
 (* the backtracking algorithm *)
-let check_position queens pos = 
+let check_position _queens _pos = 
   false
 
-let rec backtrack count =
+let backtrack _count =
   []
 
 
 (* main entry point *)
-let nqueens n = 
+let nqueens _n = 
   let tic = print_endline "Calculating.."; Sys.time () in
   let _solution = backtrack 8 in
   let toc = Sys.time () in

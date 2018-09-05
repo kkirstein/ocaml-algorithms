@@ -2,7 +2,9 @@
 *~
 *.swp
 
-# jbuilder
+# dune
+**/.merlin
+*.install
 _build/
 
 # dist
