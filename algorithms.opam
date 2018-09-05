@@ -1,11 +1,14 @@
 opam-version: "1.2"
-version: "1.0"
+name: "algorithm"
 maintainer: "kay-uwe@kirsteinhome.ch"
 authors: ["Kay-Uwe Kirstein"]
 dev-repo: "https://github.com/kkirstein/ocaml-playground.git"
 license: "MIT"
 build: [
-	["dune" "build" "--only" "benchmark" "--root" "." "-j" jobs "@install"]
+	["dune" "build" "-p" name "-j" jobs]
+]
+build-test: [
+	["dune" "runtest" "-p" name "-j" jobs]
 ]
 depends: [
 	"dune" {build}

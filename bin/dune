@@ -1,6 +1,7 @@
 
-(executables
- (names nqueens)
-  (public_names nqueens)
+(executable
+ (name nqueens)
+  (public_name nqueens)
+  (package algorithms)
   (libraries cmdliner))
 
