@@ -1,0 +1,16 @@
+opam-version: "1.2"
+name: "algorithm-tsp"
+maintainer: "kay-uwe@kirsteinhome.ch"
+authors: ["Kay-Uwe Kirstein"]
+dev-repo: "https://github.com/kkirstein/ocaml-playground.git"
+license: "MIT"
+build: [
+	["dune" "build" "-p" name "-j" jobs]
+]
+build-test: [
+	["dune" "runtest" "-p" name "-j" jobs]
+]
+depends: [
+	"dune" {build}
+	"cmdliner"
+]
