@@ -25,9 +25,6 @@ distclean: clean
 build:
 	dune build
 
-run: build
-	_build/default/bin/$(main).exe
-
 test: build
 	ALCOTEST_QUICK_TESTS=1 dune runtest
 
