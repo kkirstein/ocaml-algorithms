@@ -20,9 +20,18 @@ type t = {
 
 (**
  * Calculate fitness for given route
- *)
+*)
 let calculate route =
-  let distance = 0.0 in
-  { route; distance; fitness = 1 /. distance }
+  let dist = 
+    let start = List.hd route in
+    let rec loop rs acc =
+      match rs with
+      | []      -> failwith "Empty route given!"
+      | h :: [] -> acc +. (City.distance h start)
+      | h :: t  -> loop t (acc +. City.distance h (List.hd t))
+    in
+    loop route 0.0
+  in
+  { route; distance = dist; fitness = 1.0 /. dist }
 
 

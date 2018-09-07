@@ -2,6 +2,15 @@
 (executable
  (name nqueens)
   (public_name nqueens)
+  (modules Nqueens)
   (package algorithms)
   (libraries cmdliner))
+
+(executable
+ (name salesman)
+  (public_name salesman)
+  (modules Salesman)
+  (package algorithms-tsp)
+  (libraries cmdliner tsp))
+
 
