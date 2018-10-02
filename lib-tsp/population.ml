@@ -17,11 +17,20 @@ let create_route cities =
   let rec loop c =
     match c with
     | [] -> []
-    | (h :: t) as c -> let idx = Random.int (List.length c) in
+    | c -> let idx = Random.int (List.length c) in
       let sample = List.nth c idx in
       let remain = List.filter (fun x -> x <> sample) c in
       sample :: loop remain
   in
   loop cities
 
+(**
+ * generate an initial population
+ *)
+let initial_population size cities =
+  let rec loop i =
+    if i < size then (create_route cities) :: loop (i + 1)
+    else []
+  in
+  loop 1
 
