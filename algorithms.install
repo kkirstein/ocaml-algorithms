@@ -6,6 +6,6 @@ bin: [
   "_build/install/default/bin/nqueens" {"nqueens"}
 ]
 doc: [
-  "_build/install/default/doc/algorithms/README.md"
   "_build/install/default/doc/algorithms/LICENSE"
+  "_build/install/default/doc/algorithms/README.md"
 ]
