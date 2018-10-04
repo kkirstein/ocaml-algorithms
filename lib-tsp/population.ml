@@ -96,3 +96,20 @@ let mating_pool ranked_population elite_size =
                       List.map (fun (_, (_, x)) -> x) in
   List.append elite others_picked
 
+(**
+ * breeds a child from to given parents
+ * using ordered crossover
+ *)
+let breed p1 p2 =
+  (* check equal length of parents *)
+  if List.length p1 <> List.length p2 then failwith "Parents must have equal length"
+  else
+  (* select "genes" from first parent *)
+  let g1, g2 = Random.int (List.length p1), Random.int (List.length p1) in
+  let start_gene, end_gene = min g1 g2, max g1 g2 in
+  let crossover = [] in
+  let rec loop p1 p2 i =
+    p1
+  in
+  loop p1 p2 (List.length p1)
+
