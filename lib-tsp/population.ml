@@ -86,8 +86,13 @@ let cum_perc data =
  * an additional number of elite items
  *)
 let mating_pool ranked_population elite_size =
-  let _cum_perc = cum_perc (List.map (fun x -> x.Fitness.fitness) ranked_population)
+  let cum_perc = cum_perc (List.map (fun x -> x.Fitness.fitness) ranked_population)
   in
-  (* TODO: select populations *)
-  split_list elite_size ranked_population
+  let elite, others = split_list elite_size ranked_population in
+  let _, others_cum_perc = split_list elite_size cum_perc in
+  let pick_factor = List.map (fun _ -> Random.float 100.0) others in
+  let others_picked = List.combine pick_factor (List.combine others_cum_perc others) |>
+                      List.filter (fun (p, (c, _)) -> p <= c) |>
+                      List.map (fun (_, (_, x)) -> x) in
+  List.append elite others_picked
 
