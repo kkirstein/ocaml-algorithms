@@ -9,48 +9,7 @@
  * A module for populations of travel routes
  *)
 
-
-(**
- * create a rout by random sampling from list of cities
- *)
-let create_route cities =
-  let rec loop c =
-    match c with
-    | [] -> []
-    | c -> let idx = Random.int (List.length c) in
-      let sample = List.nth c idx in
-      let remain = List.filter (fun x -> x <> sample) c in
-      sample :: loop remain
-  in
-  loop cities
-
-(**
- * generate an initial population
- *)
-let initial_population size cities =
-  let rec loop i =
-    if i < size then (create_route cities) :: loop (i + 1)
-    else []
-  in
-  loop 1
-
-(**
- * generate ranking of the given population
- *)
-let rank population =
-  let open Fitness in
-  let fitness = List.map (fun x -> Fitness.calculate x) population in
-  List.sort (fun a b -> compare a.fitness b.fitness) fitness
-
-(**
- * generate ranking of given population and return sorted index
- *)
-let rank_index population =
-  let open Fitness in
-  let fitness = List.map (fun x -> calculate x) population in
-  let rec range a b = if a < b then a :: range (a + 1) b else [] in
-  let combined = List.combine fitness (range 0 (List.length population)) in
-  List.sort (fun (a, _) (b, _) -> compare a.fitness b.fitness) combined
+(* first some helper functions *)
 
 (**
  * splits the list into a parts at the given position
@@ -76,6 +35,26 @@ let sub_list start stop ll =
   loop 0 ll
 
 (**
+ * random sampling of list entries
+ *)
+let sample_list ?n l =
+  let len = match n with
+    | None    -> List.length l
+    | Some n  -> n
+  in
+  let rec loop l i =
+    if i < len then
+      match l with
+      | [] -> []
+      | l -> let idx = Random.int (List.length l) in
+        let sample = List.nth l idx in
+        let remain = List.filter (fun x -> x <> sample) l in
+        sample :: loop remain (i + 1)
+    else []
+  in
+  loop l 0
+
+(**
  * calculates the cumulative sum of the given float list
 *)
 let cum_sum data =
@@ -94,6 +73,55 @@ let cum_perc data =
   let sum = List.fold_left (fun a b -> a +. b) 0.0 data in
   List.map (fun x -> 100.0 *. x /. sum) cum_sum
 
+
+(* create, breed & mutate population *)
+
+(**
+ * create a rout by random sampling from list of cities
+ *)
+let create_route cities =
+  let rec loop c =
+    match c with
+    | [] -> []
+    | c -> let idx = Random.int (List.length c) in
+      let sample = List.nth c idx in
+      let remain = List.filter (fun x -> x <> sample) c in
+      sample :: loop remain
+  in
+  loop cities
+
+
+(**
+ * generate an initial population
+ *)
+let initial_population size cities =
+  let rec loop i =
+    if i < size then (create_route cities) :: loop (i + 1)
+    else []
+  in
+  loop 1
+
+
+(**
+ * generate ranking of the given population
+ *)
+let rank population =
+  let open Fitness in
+  let fitness = List.map (fun x -> Fitness.calculate x) population in
+  List.sort (fun a b -> compare a.fitness b.fitness) fitness
+
+
+(**
+ * generate ranking of given population and return sorted index
+ *)
+let rank_index population =
+  let open Fitness in
+  let fitness = List.map (fun x -> calculate x) population in
+  let rec range a b = if a < b then a :: range (a + 1) b else [] in
+  let combined = List.combine fitness (range 0 (List.length population)) in
+  List.sort (fun (a, _) (b, _) -> compare a.fitness b.fitness) combined
+
+
 (**
  * create the mating pool based on the given ranked population and
  * an additional number of elite items
@@ -108,6 +136,7 @@ let mating_pool ranked_population elite_size =
                       List.filter (fun (p, (c, _)) -> p <= c) |>
                       List.map (fun (_, (_, x)) -> x) in
   List.append elite others_picked
+
 
 (**
  * breeds a child from to given parents
@@ -130,4 +159,41 @@ let breed parent1 parent2 =
         | hd :: tl -> hd :: (loop tl p2 (i + 1)))
     in
     loop crossover parent2 0
+
+
+(**
+ * breed a complete population
+ *)
+let breed_population mating_pool elite_size =
+  let elite = sub_list 0 (elite_size - 1) mating_pool in
+  let pool = sample_list mating_pool in
+  let n_all = List.length mating_pool in
+  let n = n_all - elite_size in
+  let children = 
+    let rec loop i =
+      if i < n then (breed (List.nth pool i) (List.nth pool (n_all - i - 1))) :: loop (i + 1)
+      else []
+    in
+    loop 0
+  in
+  List.append elite children
+
+
+(**
+ * mutate a single individual by swapping to positions
+ *)
+let mutate individual mutation_rate =
+  let len = List.length individual in
+  let swap_pred = List.init len (fun _ -> Random.float 1.0 < mutation_rate) in
+  let swap_with = List.map (fun p -> if p then Some (Random.int len) else None) swap_pred in
+  let swap_with_2 = swap_with in
+  let first_swap = List.map2 (fun item swap ->  match swap with
+      | None -> item
+      | Some idx -> List.nth individual idx)
+      individual swap_with in
+  List.map2 (fun item swap -> match swap with
+      | None -> item
+      | Some idx -> List.nth individual idx)
+    first_swap swap_with_2
+
 
