@@ -63,6 +63,19 @@ let split_list n l =
   loop [] l 0
 
 (**
+ * extracts a sublist of the given indices (inclusive).
+ * Returns an empty list, if out of bounds.
+ *)
+let sub_list start stop ll =
+  let rec loop i l =
+    match l with
+    | [] -> l
+    | h :: t -> if i >= start && i <= stop then h :: (loop (i + 1) t)
+      else loop (i + 1) t
+  in
+  loop 0 ll
+
+(**
  * calculates the cumulative sum of the given float list
 *)
 let cum_sum data =
@@ -100,16 +113,21 @@ let mating_pool ranked_population elite_size =
  * breeds a child from to given parents
  * using ordered crossover
  *)
-let breed p1 p2 =
+let breed parent1 parent2 =
   (* check equal length of parents *)
-  if List.length p1 <> List.length p2 then failwith "Parents must have equal length"
+  if List.length parent1 <> List.length parent2 then failwith "Parents must have equal length"
   else
-  (* select "genes" from first parent *)
-  let g1, g2 = Random.int (List.length p1), Random.int (List.length p1) in
-  let start_gene, end_gene = min g1 g2, max g1 g2 in
-  let crossover = [] in
-  let rec loop p1 p2 i =
-    p1
-  in
-  loop p1 p2 (List.length p1)
+    (* select "genes" from first parent *)
+    let g1, g2 = Random.int (List.length parent1), Random.int (List.length parent1) in
+    let start_gene, end_gene = min g1 g2, max g1 g2 in
+    let crossover = sub_list start_gene end_gene parent1 in
+    let rec loop c p2 i =
+      if i < start_gene || i > end_gene then (match p2 with
+      | []  -> []
+      | hd :: tl -> if List.mem hd crossover then loop c tl i else hd :: (loop c tl (i + 1)))
+      else (match c with
+        | [] -> loop [] p2 (i + 1)
+        | hd :: tl -> hd :: (loop tl p2 (i + 1)))
+    in
+    loop crossover parent2 0
 
