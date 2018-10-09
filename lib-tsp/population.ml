@@ -12,6 +12,14 @@
 (* first some helper functions *)
 
 (**
+ * generates a list of int values with given range
+ * (start inclusive, stop exlcusive)
+ *)
+let rec range start stop =
+  if start < stop then start :: range (start + 1) stop
+  else []
+
+(**
  * splits the list into a parts at the given position
  *)
 let split_list n l =
@@ -126,7 +134,7 @@ let rank_index population =
  * create the mating pool based on the given ranked population and
  * an additional number of elite items
  *)
-let mating_pool ranked_population elite_size =
+let mating_pool ~elite_size ranked_population =
   let cum_perc = cum_perc (List.map (fun x -> x.Fitness.fitness) ranked_population)
   in
   let elite, others = split_list elite_size ranked_population in
@@ -135,7 +143,8 @@ let mating_pool ranked_population elite_size =
   let others_picked = List.combine pick_factor (List.combine others_cum_perc others) |>
                       List.filter (fun (p, (c, _)) -> p <= c) |>
                       List.map (fun (_, (_, x)) -> x) in
-  List.append elite others_picked
+  List.append elite others_picked |>
+  List.map (fun x -> x.Fitness.route)
 
 
 (**
@@ -164,7 +173,7 @@ let breed parent1 parent2 =
 (**
  * breed a complete population
  *)
-let breed_population mating_pool elite_size =
+let breed_population ~elite_size mating_pool =
   let elite = sub_list 0 (elite_size - 1) mating_pool in
   let pool = sample_list mating_pool in
   let n_all = List.length mating_pool in
@@ -210,9 +219,23 @@ let mutate_fp individual mutation_rate =
     first_swap swap_with_2
 *)
 
+
 (**
  * perform mutations for the whole population
  *)
-let mutate_population mutation_rate population =
+let mutate_population ~mutation_rate population =
   List.map (mutate mutation_rate) population
+
+
+(**
+ * generate next generation by selection, building a mating pool,
+ * breeding and mutation
+ *)
+let next_generation ~elite_size ~mutation_rate current =
+  rank current |>
+  mating_pool ~elite_size |>
+  breed_population ~elite_size |>
+  mutate_population ~mutation_rate
+
+
 
