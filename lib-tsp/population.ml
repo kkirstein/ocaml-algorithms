@@ -33,14 +33,24 @@ let split_list n l =
  * extracts a sublist of the given indices (inclusive).
  * Returns an empty list, if out of bounds.
  *)
-let sub_list start stop ll =
-  let rec loop i l =
-    match l with
-    | [] -> l
+let sub_list start stop l =
+  let rec loop i ll =
+    match ll with
+    | [] -> ll
     | h :: t -> if i >= start && i <= stop then h :: (loop (i + 1) t)
       else loop (i + 1) t
   in
-  loop 0 ll
+  loop 0 l
+
+(**
+ * takes out the first element equal to a
+ *)
+let take_out_first a l =
+  let flag = ref false in
+  List.fold_left
+    (fun acc x -> if x = a && not !flag then (flag := true; acc) else x :: acc)
+    [] l |>
+  List.rev
 
 (**
  * random sampling of list entries
@@ -56,7 +66,7 @@ let sample_list ?n l =
       | [] -> []
       | l -> let idx = Random.int (List.length l) in
         let sample = List.nth l idx in
-        let remain = List.filter (fun x -> x <> sample) l in
+        let remain = take_out_first sample l in
         sample :: loop remain (i + 1)
     else []
   in
@@ -85,7 +95,7 @@ let cum_perc data =
 (* create, breed & mutate population *)
 
 (**
- * create a rout by random sampling from list of cities
+ * create a route by random sampling from list of cities
  *)
 let create_route cities =
   let rec loop c =
@@ -107,7 +117,7 @@ let initial_population size cities =
     if i < size then (create_route cities) :: loop (i + 1)
     else []
   in
-  loop 1
+  loop 0
 
 
 (**
@@ -140,10 +150,15 @@ let mating_pool ~elite_size ranked_population =
   let elite, others = split_list elite_size ranked_population in
   let _, others_cum_perc = split_list elite_size cum_perc in
   let pick_factor = List.map (fun _ -> Random.float 100.0) others in
-  let others_picked = List.combine pick_factor (List.combine others_cum_perc others) |>
+  (* let _others_picked = List.combine pick_factor (List.combine others_cum_perc others) |>
                       List.filter (fun (p, (c, _)) -> p <= c) |>
-                      List.map (fun (_, (_, x)) -> x) in
-  List.append elite others_picked |>
+                      List.map (fun (_, (_, x)) -> x)
+  in *)
+  let others_picked_2 = (List.map
+      (fun p -> List.filter (fun (c, _) -> p <= c) (List.combine others_cum_perc others) |> List.hd)
+      pick_factor) |> List.map (fun (_, i) -> i)
+  in
+  List.append elite others_picked_2 |>
   List.map (fun x -> x.Fitness.route)
 
 
@@ -178,12 +193,19 @@ let breed_population ~elite_size mating_pool =
   let pool = sample_list mating_pool in
   let n_all = List.length mating_pool in
   let n = n_all - elite_size in
+  Printf.printf "breed: n_all: %d, n: %d, pool_size: %d\n" n_all n (List.length pool);
   let children = 
+    List.map (fun i -> breed (List.nth pool i) (List.nth pool (n_all - i - 1))) (range 0 n)
+    (*
     let rec loop i =
-      if i < n then (breed (List.nth pool i) (List.nth pool (n_all - i - 1))) :: loop (i + 1)
+      if i < n then begin
+        Printf.printf "loop: %d; " i;
+        (breed (List.nth pool i) (List.nth pool (n_all - i - 1))) :: loop (i + 1)
+      end
       else []
     in
     loop 0
+       *)
   in
   List.append elite children
 
@@ -197,10 +219,9 @@ let mutate mutation_rate individual =
   let swap_with = List.map (fun p -> if p then Some (Random.int len) else None) swap_pred in
   let ary = Array.of_list individual in
   for i = 0 to (len - 1) do
-    if List.nth swap_pred i then match List.nth swap_with i with
-      | Some i2 -> let orig = ary.(i) in ary.(i) <- ary.(i2); ary.(i2) <- orig
-      | None    -> failwith "Invalid swapping index!"
-    else ()
+    match List.nth swap_with i with
+    | Some i2 -> let orig = ary.(i) in ary.(i) <- ary.(i2); ary.(i2) <- orig
+    | None    -> ()
   done;
   Array.to_list ary
 (*
@@ -224,6 +245,7 @@ let mutate_fp individual mutation_rate =
  * perform mutations for the whole population
  *)
 let mutate_population ~mutation_rate population =
+  print_endline "mutate...";
   List.map (mutate mutation_rate) population
 
 
