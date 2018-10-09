@@ -125,8 +125,8 @@ let initial_population size cities =
  *)
 let rank population =
   let open Fitness in
-  let fitness = List.map (fun x -> Fitness.calculate x) population in
-  List.sort (fun a b -> compare a.fitness b.fitness) fitness
+  (* let fitness = List.map (fun x -> Fitness.calculate x) population in *)
+  List.sort (fun a b -> compare a.fitness b.fitness) population
 
 
 (**
@@ -161,28 +161,26 @@ let mating_pool ~elite_size ranked_population =
   List.append elite others_picked_2 |>
   List.map (fun x -> x.Fitness.route)
 
-
 (**
  * breeds a child from to given parents
  * using ordered crossover
  *)
 let breed parent1 parent2 =
   (* check equal length of parents *)
-  if List.length parent1 <> List.length parent2 then failwith "Parents must have equal length"
-  else
-    (* select "genes" from first parent *)
-    let g1, g2 = Random.int (List.length parent1), Random.int (List.length parent1) in
-    let start_gene, end_gene = min g1 g2, max g1 g2 in
-    let crossover = sub_list start_gene end_gene parent1 in
-    let rec loop c p2 i =
-      if i < start_gene || i > end_gene then (match p2 with
-      | []  -> []
-      | hd :: tl -> if List.mem hd crossover then loop c tl i else hd :: (loop c tl (i + 1)))
-      else (match c with
+  assert (List.compare_lengths parent1 parent2 = 0);
+  (* select "genes" from first parent *)
+  let g1, g2 = Random.int (List.length parent1), Random.int (List.length parent1) in
+  let start_gene, end_gene = min g1 g2, max g1 g2 in
+  let crossover = sub_list start_gene end_gene parent1 in
+  let rec loop c p2 i =
+    if i < start_gene || i > end_gene then (match p2 with
+        | []  -> []
+        | hd :: tl -> if List.mem hd crossover then loop c tl i else hd :: (loop c tl (i + 1)))
+    else (match c with
         | [] -> loop [] p2 (i + 1)
         | hd :: tl -> hd :: (loop tl p2 (i + 1)))
-    in
-    loop crossover parent2 0
+  in
+  loop crossover parent2 0
 
 
 (**
@@ -195,8 +193,7 @@ let breed_population ~elite_size mating_pool =
   let n = n_all - elite_size in
   Printf.printf "breed: n_all: %d, n: %d, pool_size: %d\n" n_all n (List.length pool);
   let children = 
-    List.map (fun i -> breed (List.nth pool i) (List.nth pool (n_all - i - 1))) (range 0 n)
-    (*
+    List.map (fun i -> breed (List.nth pool i)(List.nth pool (n_all - i - 1))) (range 0 n)    (*
     let rec loop i =
       if i < n then begin
         Printf.printf "loop: %d; " i;
@@ -213,7 +210,7 @@ let breed_population ~elite_size mating_pool =
 (**
  * mutate a single individual by swapping to positions
  *)
-let mutate mutation_rate individual =
+let mutate ~mutation_rate individual =
   let len = List.length individual in
   let swap_pred = List.init len (fun _ -> Random.float 1.0 < mutation_rate) in
   let swap_with = List.map (fun p -> if p then Some (Random.int len) else None) swap_pred in
@@ -246,7 +243,7 @@ let mutate_fp individual mutation_rate =
  *)
 let mutate_population ~mutation_rate population =
   print_endline "mutate...";
-  List.map (mutate mutation_rate) population
+  List.map (mutate ~mutation_rate) population
 
 
 (**
@@ -257,7 +254,8 @@ let next_generation ~elite_size ~mutation_rate current =
   rank current |>
   mating_pool ~elite_size |>
   breed_population ~elite_size |>
-  mutate_population ~mutation_rate
+  mutate_population ~mutation_rate |>
+  List.map Fitness.calculate
 
 
 

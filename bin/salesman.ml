@@ -13,8 +13,10 @@ open Cmdliner
 open Ga.Population
 
 (* genetic algorithm *)
-let genetic_algorithm ~elite_size ~mutation_rate ~population_size ~generations population =
-  let initial = initial_population population_size population in
+let genetic_algorithm ~elite_size ~mutation_rate ~population_size ~generations first_generation =
+  let initial = initial_population population_size first_generation |>
+                List.map Ga.Fitness.calculate
+  in
   let rec loop acc last idx =
     if idx < generations then
       let next = Ga.Population.next_generation ~elite_size ~mutation_rate last in 
@@ -29,10 +31,10 @@ let salesman verbose elite_size mutation_rate population_size generations =
     Printf.printf "Config: population_size: %d, elite_size: %d, mutation_rate: %f, generations: %d\n"
       population_size elite_size mutation_rate generations
   else ();
-  let population =  List.init 25
+  let first_generation =  List.init 25
       (fun _ -> Ga.City.create (Random.int 200) (Random.int 200))
   in
-  let ga = genetic_algorithm ~elite_size ~mutation_rate ~population_size ~generations population in
+  let ga = genetic_algorithm ~elite_size ~mutation_rate ~population_size ~generations first_generation in
   if verbose then begin
     Printf.printf "Initial distance: %f.\n" (rank (List.hd ga) |> List.hd).Ga.Fitness.distance;
     print_endline "Done."
