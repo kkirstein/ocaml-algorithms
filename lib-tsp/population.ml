@@ -182,7 +182,20 @@ let breed_population mating_pool elite_size =
 (**
  * mutate a single individual by swapping to positions
  *)
-let mutate individual mutation_rate =
+let mutate mutation_rate individual =
+  let len = List.length individual in
+  let swap_pred = List.init len (fun _ -> Random.float 1.0 < mutation_rate) in
+  let swap_with = List.map (fun p -> if p then Some (Random.int len) else None) swap_pred in
+  let ary = Array.of_list individual in
+  for i = 0 to (len - 1) do
+    if List.nth swap_pred i then match List.nth swap_with i with
+      | Some i2 -> let orig = ary.(i) in ary.(i) <- ary.(i2); ary.(i2) <- orig
+      | None    -> failwith "Invalid swapping index!"
+    else ()
+  done;
+  Array.to_list ary
+(*
+let mutate_fp individual mutation_rate =
   let len = List.length individual in
   let swap_pred = List.init len (fun _ -> Random.float 1.0 < mutation_rate) in
   let swap_with = List.map (fun p -> if p then Some (Random.int len) else None) swap_pred in
@@ -195,5 +208,11 @@ let mutate individual mutation_rate =
       | None -> item
       | Some idx -> List.nth individual idx)
     first_swap swap_with_2
+*)
 
+(**
+ * perform mutations for the whole population
+ *)
+let mutate_population mutation_rate population =
+  List.map (mutate mutation_rate) population
 
