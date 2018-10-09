@@ -11,6 +11,6 @@
   (public_name salesman)
   (modules Salesman)
   (package algorithms-tsp)
-  (libraries cmdliner tsp))
+  (libraries cmdliner ga))
 
 
