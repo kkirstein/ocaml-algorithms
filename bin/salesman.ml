@@ -33,11 +33,10 @@ let salesman verbose elite_size mutation_rate population_size generations =
       (fun _ -> Ga.City.create (Random.int 200) (Random.int 200))
   in
   let ga = genetic_algorithm ~elite_size ~mutation_rate ~population_size ~generations population in
-  if verbose then
-    Printf.printf "Initial distance: %f.\n" (rank (List.hd ga) |> List.hd).Ga.Fitness.distance
-  (*
-  print_endline "Done."
-       *)
+  if verbose then begin
+    Printf.printf "Initial distance: %f.\n" (rank (List.hd ga) |> List.hd).Ga.Fitness.distance;
+    print_endline "Done."
+  end
   else ()
 
 (* cmdliner options *)
