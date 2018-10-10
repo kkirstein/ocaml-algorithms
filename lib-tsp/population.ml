@@ -191,7 +191,6 @@ let breed_population ~elite_size mating_pool =
   let pool = sample_list mating_pool in
   let n_all = List.length mating_pool in
   let n = n_all - elite_size in
-  Printf.printf "breed: n_all: %d, n: %d, pool_size: %d\n" n_all n (List.length pool);
   let children = 
     List.map (fun i -> breed (List.nth pool i)(List.nth pool (n_all - i - 1))) (range 0 n)    (*
     let rec loop i =
@@ -242,7 +241,6 @@ let mutate_fp individual mutation_rate =
  * perform mutations for the whole population
  *)
 let mutate_population ~mutation_rate population =
-  print_endline "mutate...";
   List.map (mutate ~mutation_rate) population
 
 
