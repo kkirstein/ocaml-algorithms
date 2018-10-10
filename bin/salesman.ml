@@ -20,7 +20,7 @@ let genetic_algorithm ~elite_size ~mutation_rate ~population_size ~generations f
   let rec loop acc last idx =
     if idx < generations then
       let next = Ga.Population.next_generation ~elite_size ~mutation_rate last in 
-      loop (next :: acc) next (idx + 1)
+      loop (Ga.Population.rank next :: acc) next (idx + 1)
     else List.rev acc
   in
   loop [] initial 0
@@ -43,13 +43,13 @@ let salesman verbose elite_size mutation_rate population_size generations =
   in
   let ga = genetic_algorithm ~elite_size ~mutation_rate ~population_size ~generations first_generation in
   let distances = get_distance ga in
-  let all_distance = get_all_distance ga in
+  let _all_distance = get_all_distance ga in
   if verbose then begin
     Printf.printf "Initial distance: %f.\n" (List.hd distances);
     Printf.printf "Final distance: %f.\n" (List.rev distances |> List.hd);
-    List.iter
+(*    List.iter
       (fun d -> print_endline (String.concat "," (List.map string_of_float d)))
-      all_distance;
+      all_distance; *)
     print_endline "Done."
   end
   else ()
