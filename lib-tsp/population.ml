@@ -126,7 +126,7 @@ let initial_population size cities =
 let rank population =
   let open Fitness in
   (* let fitness = List.map (fun x -> Fitness.calculate x) population in *)
-  List.sort (fun a b -> compare a.fitness b.fitness) population
+  List.sort (fun a b -> - compare a.fitness b.fitness) population
 
 
 (**
