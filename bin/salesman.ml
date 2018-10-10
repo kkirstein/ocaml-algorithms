@@ -37,6 +37,7 @@ let salesman verbose elite_size mutation_rate population_size generations =
   let ga = genetic_algorithm ~elite_size ~mutation_rate ~population_size ~generations first_generation in
   if verbose then begin
     Printf.printf "Initial distance: %f.\n" (rank (List.hd ga) |> List.hd).Ga.Fitness.distance;
+    Printf.printf "Final distance: %f.\n" (rank (List.rev ga |> List.hd) |> List.hd).Ga.Fitness.distance;
     print_endline "Done."
   end
   else ()
