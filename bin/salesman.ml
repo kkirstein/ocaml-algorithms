@@ -25,6 +25,13 @@ let genetic_algorithm ~elite_size ~mutation_rate ~population_size ~generations f
   in
   loop [] initial 0
 
+(* extract distance values *)
+let get_distance generations =
+  List.map (fun g -> (List.hd g).Ga.Fitness.distance) generations
+
+let get_all_distance generations =
+  List.map (fun g -> List.map (fun i -> i.Ga.Fitness.distance) g) generations
+
 (* main entry point *)
 let salesman verbose elite_size mutation_rate population_size generations =
   if verbose then
@@ -35,9 +42,14 @@ let salesman verbose elite_size mutation_rate population_size generations =
       (fun _ -> Ga.City.create (Random.int 200) (Random.int 200))
   in
   let ga = genetic_algorithm ~elite_size ~mutation_rate ~population_size ~generations first_generation in
+  let distances = get_distance ga in
+  let all_distance = get_all_distance ga in
   if verbose then begin
-    Printf.printf "Initial distance: %f.\n" (rank (List.hd ga) |> List.hd).Ga.Fitness.distance;
-    Printf.printf "Final distance: %f.\n" (rank (List.rev ga |> List.hd) |> List.hd).Ga.Fitness.distance;
+    Printf.printf "Initial distance: %f.\n" (List.hd distances);
+    Printf.printf "Final distance: %f.\n" (List.rev distances |> List.hd);
+    List.iter
+      (fun d -> print_endline (String.concat "," (List.map string_of_float d)))
+      all_distance;
     print_endline "Done."
   end
   else ()
