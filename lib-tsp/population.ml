@@ -249,11 +249,12 @@ let mutate_population ~mutation_rate population =
  * breeding and mutation
  *)
 let next_generation ~elite_size ~mutation_rate current =
-  rank current |>
+  (* rank *) current |>
   mating_pool ~elite_size |>
   breed_population ~elite_size |>
   mutate_population ~mutation_rate |>
-  List.map Fitness.calculate
+  List.map Fitness.calculate |>
+  rank
 
 
 

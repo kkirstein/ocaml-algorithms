@@ -10,17 +10,18 @@
  *)
 
 open Cmdliner
-open Ga.Population
+(* open Ga.Population *)
 
 (* genetic algorithm *)
 let genetic_algorithm ~elite_size ~mutation_rate ~population_size ~generations first_generation =
-  let initial = initial_population population_size first_generation |>
-                List.map Ga.Fitness.calculate
+  let initial = Ga.Population.(initial_population population_size first_generation |>
+                List.map Ga.Fitness.calculate |>
+                rank)
   in
   let rec loop acc last idx =
     if idx < generations then
       let next = Ga.Population.next_generation ~elite_size ~mutation_rate last in 
-      loop (Ga.Population.rank next :: acc) next (idx + 1)
+      loop (next :: acc) next (idx + 1)
     else List.rev acc
   in
   loop [] initial 0
@@ -41,7 +42,9 @@ let salesman verbose elite_size mutation_rate population_size generations =
   let first_generation =  List.init 25
       (fun _ -> Ga.City.create (Random.int 200) (Random.int 200))
   in
+  let tic = Sys.time () in
   let ga = genetic_algorithm ~elite_size ~mutation_rate ~population_size ~generations first_generation in
+  let toc = Sys.time () in
   let distances = get_distance ga in
   let _all_distance = get_all_distance ga in
   if verbose then begin
@@ -50,7 +53,7 @@ let salesman verbose elite_size mutation_rate population_size generations =
 (*    List.iter
       (fun d -> print_endline (String.concat "," (List.map string_of_float d)))
       all_distance; *)
-    print_endline "Done."
+    Printf.printf "Done (Elapsed time %.3fs).\n" (toc -. tic)
   end
   else ()
 
