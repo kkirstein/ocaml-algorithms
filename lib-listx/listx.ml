@@ -30,6 +30,17 @@ let split_list n l =
   in
   loop [] l 0
 
+let%test_module _ = (module struct
+                      let l = [1; 2; 3; 4; 5; 6; 7; 8]
+
+                      let%test _ = split_list 0 l = ([], l)
+                      let%test _ = split_list 1 l = ([1], [2; 3; 4; 5; 6; 7; 8])
+                      let%test _ = split_list 5 l = ([1; 2; 3; 4; 5], [6; 7; 8])
+                      let%test _ = split_list 8 l = (l, [])
+
+                    end)
+
+
 (**
  * extracts a sublist of the given indices (inclusive).
  * Returns an empty list, if out of bounds.
