@@ -31,13 +31,12 @@ let split_list n l =
   loop [] l 0
 
 let%test_module _ = (module struct
-                      let l = [1; 2; 3; 4; 5; 6; 7; 8]
+                      let ll = [1; 2; 3; 4; 5; 6; 7; 8]
 
-                      let%test _ = split_list 0 l = ([], l)
-                      let%test _ = split_list 1 l = ([1], [2; 3; 4; 5; 6; 7; 8])
-                      let%test _ = split_list 5 l = ([1; 2; 3; 4; 5], [6; 7; 8])
-                      let%test _ = split_list 8 l = (l, [])
-
+                      let%test _ = split_list 0 ll = ([], ll)
+                      let%test _ = split_list 1 ll = ([1], [2; 3; 4; 5; 6; 7; 8])
+                      let%test _ = split_list 5 ll = ([1; 2; 3; 4; 5], [6; 7; 8])
+                      let%test _ = split_list 8 ll = (ll, [])
                     end)
 
 
@@ -54,6 +53,16 @@ let sub_list start stop l =
   in
   loop 0 l
 
+let%test_module _ = (module struct
+                      let ll = [1; 2; 3; 4; 5; 6; 7; 8]
+
+                      let%test _ = sub_list 2 6 ll = [3; 4; 5; 6; 7]
+                      let%test _ = sub_list 0 7 ll = ll
+                      let%test _ = sub_list 5 3 ll = []
+                      let%test _ = sub_list 3 8 ll = [4; 5; 6; 7; 8]
+                    end)
+
+
 (**
  * takes out the first element equal to a
  *)
@@ -63,6 +72,16 @@ let take_out_first a l =
     (fun acc x -> if x = a && not !flag then (flag := true; acc) else x :: acc)
     [] l |>
   List.rev
+
+let%test_module _ = (module struct
+                      let ll = [1; 2; 4; 3; 2; 5; 4; 7; 2]
+
+                      let%test _ = take_out_first 3 ll = [1; 2; 4; 2; 5; 4; 7; 2]
+                      let%test _ = take_out_first 0 ll = [1; 2; 4; 3; 2; 5; 4; 7; 2]
+                      let%test _ = take_out_first 2 ll = [1; 4; 3; 2; 5; 4; 7; 2]
+                      let%test _ = take_out_first 4 ll = [1; 2; 3; 2; 5; 4; 7; 2]
+                    end)
+
 
 (**
  * random sampling of list entries
@@ -83,5 +102,13 @@ let sample_list ?n l =
     else []
   in
   loop l 0
+
+
+let%test_module _ = (module struct
+                      let ll = [1; 2; 3; 4; 5; 6; 7; 8]
+
+                      let%test _ = List.length (sample_list ll) = List.length ll
+                      let%test _ = List.length (sample_list ~n:5 ll) = 5
+                    end)
 
 

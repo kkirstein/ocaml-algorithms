@@ -25,8 +25,8 @@ distclean: clean
 build:
 	dune build
 
-test: build
-	ALCOTEST_QUICK_TESTS=1 dune runtest
+test:
+	dune runtest
 
 # make distribution package (folder)
 dist: build
