@@ -13,4 +13,5 @@ build-test: [
 depends: [
 	"dune" {build}
 	"cmdliner"
+	"ppx_inline_test" {test}
 ]

@@ -1,4 +1,4 @@
 (library
  (name ga)
- (libraries unix))
+ (libraries unix listx))
 
