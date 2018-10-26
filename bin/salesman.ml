@@ -12,15 +12,17 @@
 open Cmdliner
 (* open Ga.Population *)
 
+module Routes = Ga.Fitness.Make(Route)
+
 (* genetic algorithm *)
 let genetic_algorithm ~elite_size ~mutation_rate ~population_size ~generations first_generation =
-  let initial = Ga.Population.(initial_population population_size first_generation |>
-                List.map Ga.Fitness.calculate |>
-                rank)
+  let initial = Route.initial_population population_size first_generation |>
+                Routes.fitness |>
+                Routes.rank
   in
   let rec loop acc last idx =
     if idx < generations then
-      let next = Ga.Population.next_generation ~elite_size ~mutation_rate last in 
+      let next = Routes.next_generation ~elite_size ~mutation_rate last in 
       loop (next :: acc) next (idx + 1)
     else List.rev acc
   in
@@ -28,10 +30,10 @@ let genetic_algorithm ~elite_size ~mutation_rate ~population_size ~generations f
 
 (* extract distance values *)
 let get_distance generations =
-  List.map (fun g -> (List.hd g).Ga.Fitness.distance) generations
+  List.map (fun g -> 1.0 /. (List.hd g).Routes.fitness) generations
 
 let get_all_distance generations =
-  List.map (fun g -> List.map (fun i -> i.Ga.Fitness.distance) g) generations
+  List.map (fun g -> List.map (fun i -> 1.0 /. i.Routes.fitness) g) generations
 
 (* main entry point *)
 let salesman verbose elite_size mutation_rate population_size generations =
@@ -40,7 +42,7 @@ let salesman verbose elite_size mutation_rate population_size generations =
       population_size elite_size mutation_rate generations
   else ();
   let first_generation =  List.init 25
-      (fun _ -> Ga.City.create (Random.int 200) (Random.int 200))
+      (fun _ -> City.create (Random.int 200) (Random.int 200))
   in
   let tic = Sys.time () in
   let ga = genetic_algorithm ~elite_size ~mutation_rate ~population_size ~generations first_generation in

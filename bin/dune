@@ -9,7 +9,7 @@
 (executable
  (name salesman)
   (public_name salesman)
-  (modules Salesman)
+  (modules Salesman City Route)
   (package algorithms-tsp)
   (libraries cmdliner ga))
 

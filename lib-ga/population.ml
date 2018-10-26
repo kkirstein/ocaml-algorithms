@@ -9,6 +9,7 @@
  * A module for populations of travel routes
  *)
 
+(*
 open Listx
 
 
@@ -195,6 +196,6 @@ let next_generation ~elite_size ~mutation_rate current =
   mutate_population ~mutation_rate |>
   List.map Fitness.calculate |>
   rank
-
+*)
 
 
