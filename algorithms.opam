@@ -2,7 +2,7 @@ opam-version: "1.2"
 name: "algorithm"
 maintainer: "kay-uwe@kirsteinhome.ch"
 authors: ["Kay-Uwe Kirstein"]
-dev-repo: "https://github.com/kkirstein/ocaml-playground.git"
+dev-repo: "https://github.com/kkirstein/ocaml-algorithms.git"
 license: "MIT"
 build: [
 	["dune" "build" "-p" name "-j" jobs]
